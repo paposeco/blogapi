@@ -3,7 +3,8 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 
 exports.new_post_get = (req, res, next) => {
-  return res.send("New blog post get");
+  console.log("new post");
+  return res.send(" new psot");
 };
 
 exports.new_post_post = (req, res, next) => {
@@ -35,9 +36,6 @@ exports.create_user_post = async function(req, res, next) {
       });
       try {
         // tested with curl -X POST -H "Content-Type:application/json" http://localhost.localdomain:3000/editor/createuser -d '{"email": "teste", "password": "password", "name": "nome"}'
-
-        // need to then send a token to api or something
-
         await newuser.save();
         return res.send(`${newuser}\n`);
       } catch (err) {

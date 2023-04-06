@@ -5,7 +5,8 @@ import indexRouter from "./routes/index.js";
 import authRouter from "./routes/auth.js";
 import postRouter from "./routes/post.js";
 import mongoose from "mongoose";
-require("./passport");
+import path from "path";
+import passport from "passport";
 
 mongoose.set("strictQuery", false);
 const mongoDB = process.env.MONGODB_URI;
@@ -16,6 +17,9 @@ async function main() {
 
 const app = express();
 
+app.use(passport.initialize());
+
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
@@ -24,6 +28,11 @@ app.use(cors());
 app.use("/", indexRouter);
 app.use("/", authRouter);
 app.use("/", postRouter);
+/* app.use(
+ *   "/editor/login",
+ *   passport.authenticate("jwt", { session: false }),
+ *   authRouter
+ * ); */
 
 app.listen(process.env.PORT, () =>
   console.log("Example app listening on port 3000!")

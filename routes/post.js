@@ -16,7 +16,4 @@ router.post("/posts/:postid/comments/newcomment", comments.new_comment_post);
 
 //new post
 
-router.get("/posts/newpost", editor.new_post_get);
-router.post("/posts/newpost", editor.new_post_post);
-
 export default router;
