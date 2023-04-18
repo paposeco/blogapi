@@ -42,15 +42,9 @@ passport.use(
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWTSECRET,
     },
-    function() {
-      console.log("why");
-      return next();
+    function(jwtPayload, cb) {
+      return cb(null, "goodstuff\n");
     }
-
-    /* function(jwtPayload) {
-     *   // not sure if this is needed
-     *   return done(null, jwtPayload.author_name);
-     * } */
   )
 );
 

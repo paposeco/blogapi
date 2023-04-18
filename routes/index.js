@@ -18,6 +18,10 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   editor.new_post_get
 );
-router.post("/editor/newpost", editor.new_post_post);
+router.post(
+  "/editor/newpost",
+  passport.authenticate("jwt", { session: false }),
+  editor.new_post_post
+);
 
 export default router;
