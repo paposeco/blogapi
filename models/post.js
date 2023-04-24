@@ -16,4 +16,8 @@ PostSchema.virtual("post_timestamp").get(function() {
   return DateTime.fromJSDate(this.date).toLocaleString(DateTime.DATETIME_SHORT);
 });
 
+PostSchema.virtual("url").get(function() {
+  return `/posts/${this._id}`;
+});
+
 module.exports = mongoose.model("Post", PostSchema);

@@ -35,7 +35,6 @@ passport.use(
   })
 );
 
-// middleware that allows only requests with valid tokens to access routes needing authentication
 passport.use(
   new JWTStrategy(
     {
@@ -48,7 +47,15 @@ passport.use(
   )
 );
 
-// curl -X POST -H "Content-Type:application/json" http://localhost.localdomain:3000/editor/login -d '{"username": "xxx", "password": "xxx"}'
+export function decodeToken(req, res, next) {
+  console.log("decode");
+  // I will send the token on the request body, but will need to find an alternative later maybe
+  const decoded = jwt.verify(req.body.token, process.env.JWTSECRET);
+  req.body.author = decoded.author_name;
+  req.body.username = decoded.username;
+  next();
+}
+
 router.post("/editor/login", (req, res, next) => {
   passport.authenticate("local", { session: false }, (err, user, info) => {
     if (err || !user) {
@@ -64,7 +71,7 @@ router.post("/editor/login", (req, res, next) => {
       }
       // generate a signed json web token with the contents of user object and return it in the response
       const token = jwt.sign(
-        { author_name: user.author_name },
+        { author_name: user.author_name, username: req.body.username },
         process.env.JWTSECRET
       );
       return res.json({ token });
