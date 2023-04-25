@@ -154,14 +154,15 @@ exports.delete_post_delete = async function(req, res, next) {
     const post = await Post.findById(req.params.postid);
     const comments = post.comments;
     try {
-      await Comments.deleteMany({ _id: { $in: { comments } } });
+      await Comment.deleteMany({ _id: { $in: comments } });
       try {
         await Post.findByIdAndDelete(req.params.postid);
-        res.status(200).json({ message: "Post deleted" });
+        return res.status(200).json({ message: "Post deleted" });
       } catch (err) {
         return res.status(400).json({ message: "Couldn't delete post" });
       }
     } catch (err) {
+      console.log(err);
       return res.status(400).json({ message: "Couldn't delete comments" });
     }
   } catch (err) {
@@ -169,6 +170,48 @@ exports.delete_post_delete = async function(req, res, next) {
   }
 };
 
-exports.delete_comment = (req, res, next) => {
-  return res.send("Delete comment");
+exports.get_comment = async function(req, res, next) {
+  try {
+    const comment = await Comment.findById(req.params.commentid);
+    return res.status(200).json({ comment });
+  } catch (err) {
+    return res.status(400).json({ message: "couldn't find comment" });
+  }
+};
+
+exports.delete_comment = async function(req, res, next) {
+  try {
+    const post = await Post.findById(req.params.postid);
+    const commentid = req.params.commentid;
+    const findcommentinpost = (element) =>
+      element.toString() === req.params.commentid;
+    post.comments.splice(post.comments.findIndex(findcommentinpost), 1);
+    try {
+      await Post.findByIdAndUpdate(req.params.postid, {
+        $set: { comments: post.comments },
+      });
+      try {
+        await Comment.findByIdAndDelete(req.params.commentid);
+        res.status(200).json({ message: "Comment deleted" });
+      } catch (err) {
+        return res.status(400).json({ message: "couldn't delete comment" });
+      }
+    } catch (err) {
+      return res.status(400).json({ message: "couldn't update post" });
+    }
+  } catch (err) {
+    return res.status(400).json({ message: "couldn't find post" });
+  }
+};
+
+// get all posts
+
+exports.posts_get = async function(req, res, next) {
+  try {
+    console.log("try");
+    const posts = await Post.find();
+    return res.json({ posts });
+  } catch (err) {
+    return res.status(400).json({ message: "couldn't fetch posts" });
+  }
 };
