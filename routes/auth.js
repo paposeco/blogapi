@@ -50,7 +50,6 @@ passport.use(
 export function decodeToken(req, res, next) {
   // I will send the token on the request body, but will need to find an alternative later maybe
   const decoded = jwt.verify(req.body.token, process.env.JWTSECRET);
-  console.log(decoded);
   req.body.author = decoded.author_name;
   req.body.username = decoded.username;
   next();

@@ -2,16 +2,6 @@ import Comment from "../models/comment";
 import Post from "../models/post";
 import { body, validationResult } from "express-validator";
 
-// not sure if this is necessary. comments should be loaded along with the blog post
-exports.comments_get = (req, res, next) => {
-  return res.send("comments\n");
-};
-
-// needs a token. only used by the blog editor
-exports.single_comment_get = (req, res, next) => {
-  return res.send("a comment\n");
-};
-
 exports.new_comment_get = async function(req, res, next) {
   const postid = req.params.postid;
   try {
@@ -79,7 +69,7 @@ exports.new_comment_post = [
           try {
             await Post.findByIdAndUpdate(req.params.postid, {
               $push: { comments: newcomment._id },
-            });
+            }).exec();
             return res.status(201).json({
               posturl: `/posts/${req.params.postid}/comments`,
             });

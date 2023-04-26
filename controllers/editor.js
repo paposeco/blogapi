@@ -151,12 +151,12 @@ exports.update_post_put = [
 
 exports.delete_post_delete = async function(req, res, next) {
   try {
-    const post = await Post.findById(req.params.postid);
+    const post = await Post.findById(req.params.postid).exec();
     const comments = post.comments;
     try {
-      await Comment.deleteMany({ _id: { $in: comments } });
+      await Comment.deleteMany({ _id: { $in: comments } }).exec();
       try {
-        await Post.findByIdAndDelete(req.params.postid);
+        await Post.findByIdAndDelete(req.params.postid).exec();
         return res.status(200).json({ message: "Post deleted" });
       } catch (err) {
         return res.status(400).json({ message: "Couldn't delete post" });
@@ -172,7 +172,7 @@ exports.delete_post_delete = async function(req, res, next) {
 
 exports.get_comment = async function(req, res, next) {
   try {
-    const comment = await Comment.findById(req.params.commentid);
+    const comment = await Comment.findById(req.params.commentid).exec();
     return res.status(200).json({ comment });
   } catch (err) {
     return res.status(400).json({ message: "couldn't find comment" });
@@ -181,7 +181,7 @@ exports.get_comment = async function(req, res, next) {
 
 exports.delete_comment = async function(req, res, next) {
   try {
-    const post = await Post.findById(req.params.postid);
+    const post = await Post.findById(req.params.postid).exec();
     const commentid = req.params.commentid;
     const findcommentinpost = (element) =>
       element.toString() === req.params.commentid;
@@ -192,7 +192,7 @@ exports.delete_comment = async function(req, res, next) {
       });
       try {
         await Comment.findByIdAndDelete(req.params.commentid);
-        res.status(200).json({ message: "Comment deleted" });
+        return res.status(200).json({ message: "Comment deleted" });
       } catch (err) {
         return res.status(400).json({ message: "couldn't delete comment" });
       }
@@ -208,10 +208,22 @@ exports.delete_comment = async function(req, res, next) {
 
 exports.posts_get = async function(req, res, next) {
   try {
-    console.log("try");
-    const posts = await Post.find();
+    const posts = await Post.find({}).exec();
     return res.json({ posts });
   } catch (err) {
     return res.status(400).json({ message: "couldn't fetch posts" });
+  }
+};
+
+// get all comments from post
+
+exports.comments_get = async function(req, res, next) {
+  try {
+    const comments = await Post.findById(req.params.postid, "comments")
+      .populate("comments")
+      .exec();
+    return res.status(200).json({ comments });
+  } catch (err) {
+    return res.status(400).json({ message: "couldn't fetch comments" });
   }
 };

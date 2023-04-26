@@ -6,8 +6,8 @@ import { decodeToken } from "./auth.js";
 
 const router = express.Router();
 
-router.get("/", blog.homepage);
-router.get("/posts", blog.homepage);
+router.get("/", blog.posts_get);
+router.get("/posts", blog.posts_get);
 
 router.get("/editor/login", editor.login_get);
 router.get(
@@ -17,7 +17,5 @@ router.get(
 );
 router.get("/editor/createuser", editor.create_user_get);
 router.post("/editor/createuser", editor.create_user_post);
-
-// need a see all posts for editor
 
 export default router;

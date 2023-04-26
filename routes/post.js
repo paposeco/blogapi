@@ -8,11 +8,10 @@ import { decodeToken } from "./auth.js";
 const router = express.Router();
 
 router.get("/posts/:postid", blog.single_post_get);
+router.get("/posts", blog.posts_get);
 
 router.get("/posts/:postid/comments/newcomment", comments.new_comment_get);
 router.post("/posts/:postid/comments/newcomment", comments.new_comment_post);
-router.get("/posts/:postid/comments/:commentid", comments.single_comment_get);
-router.get("/posts/:postid/comments", comments.comments_get);
 
 // new post
 router.get(
@@ -33,11 +32,16 @@ router.post(
 router.get(
   "/editor/posts",
   passport.authenticate("jwt", { session: false }),
-  decodeToken,
   editor.posts_get
 );
 
 // all comments for post
+
+router.get(
+  "/editor/posts/:postid/comments",
+  passport.authenticate("jwt", { session: false }),
+  editor.comments_get
+);
 
 // edit posts
 router.get(
