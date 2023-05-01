@@ -27,14 +27,6 @@ router.post(
   editor.new_post_post
 );
 
-// editor all posts
-
-router.get(
-  "/editor/posts",
-  passport.authenticate("jwt", { session: false }),
-  editor.posts_get
-);
-
 // all comments for post
 
 router.get(
@@ -69,7 +61,6 @@ router.delete(
 router.get(
   "/editor/posts/:postid/comments/:commentid",
   passport.authenticate("jwt", { session: false }),
-  decodeToken,
   editor.get_comment
 );
 
@@ -78,6 +69,14 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   decodeToken,
   editor.delete_comment
+);
+
+// editor all posts
+
+router.get(
+  "/editor/posts",
+  passport.authenticate("jwt", { session: false }),
+  editor.posts_get
 );
 
 export default router;

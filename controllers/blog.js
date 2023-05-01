@@ -22,6 +22,7 @@ exports.posts_get = async function(req, res, next) {
       .sort({ date: 1 })
       .populate("comments")
       .exec();
+    console.log(posts);
     return res.status(200).json({ posts });
   } catch (err) {
     return res.status(400).json({ message: "couldn't fetch posts" });

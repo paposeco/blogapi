@@ -10,7 +10,15 @@ import { body, validationResult } from "express-validator";
 import "dotenv/config";
 
 exports.new_post_get = (req, res, next) => {
-  // front end must send the token on the header. get's checked on the previous middleware. get method doesn't have a request body.
+  /* console.log("get ")
+   * // front end must send the token on the header. get's checked on the previous middleware. get method doesn't have a request body.
+   * try {
+   *   const post = await Post.findById(req.params.postid).populate("comments");
+   *   console.log(post);
+   *   return res.status(200).json({ post });
+   * } catch (err) {
+   *   return res.status(400).json({ message: "Can't fetch post from db" });
+   * } */
   return res.json({ user: true });
 };
 
@@ -95,12 +103,10 @@ exports.create_user_post = async function(req, res, next) {
   }
 };
 
-// change draft to false
-
 exports.update_post_get = async function(req, res, next) {
   const postid = req.params.postid;
   try {
-    const post = await Post.findById(postid);
+    const post = await Post.findById(postid).populate("comments").exec();
     return res.json({ post });
   } catch (err) {
     return res.json({ message: err });
