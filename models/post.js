@@ -23,7 +23,7 @@ PostSchema.virtual("post_timestamp").get(function() {
 });
 
 PostSchema.virtual("url").get(function() {
-  return `/posts/${this._id}`;
+  return `/blog/posts/${this._id}`;
 });
 
 PostSchema.virtual("urleditor").get(function() {

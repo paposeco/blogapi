@@ -51,7 +51,7 @@ exports.new_comment_post = [
       } else {
         try {
           let newcomment;
-          if (req.body.reader_email !== undefined) {
+          if (req.body.reader_email !== "") {
             newcomment = new Comment({
               reader_email: req.body.reader_email,
               reader_username: req.body.reader_username,

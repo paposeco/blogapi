@@ -10,8 +10,8 @@ const router = express.Router();
 router.get("/posts/:postid", blog.single_post_get);
 router.get("/posts", blog.posts_get);
 
-router.get("/posts/:postid/comments/newcomment", comments.new_comment_get);
-router.post("/posts/:postid/comments/newcomment", comments.new_comment_post);
+router.get("/posts/:postid/newcomment", comments.new_comment_get);
+router.post("/posts/:postid/newcomment", comments.new_comment_post);
 
 // new post
 router.get(

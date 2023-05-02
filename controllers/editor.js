@@ -214,7 +214,7 @@ exports.delete_comment = async function(req, res, next) {
 
 exports.posts_get = async function(req, res, next) {
   try {
-    const posts = await Post.find({}).exec();
+    const posts = await Post.find({}).sort({ date: 1 }).exec();
     return res.json({ posts });
   } catch (err) {
     return res.status(400).json({ message: "couldn't fetch posts" });

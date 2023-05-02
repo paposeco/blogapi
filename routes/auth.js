@@ -73,15 +73,15 @@ router.post("/editor/login", (req, res, next) => {
         { author_name: user.author_name, username: req.body.username },
         process.env.JWTSECRET
       );
-      return res.json({ token });
+      return res.json({ token: token, author: user.author_name });
     });
   })(req, res);
 });
 
 //  I can now use this pass.authenticate jwt on every route that requires authentication, or I can use the verify function of the guy on the video
 
-router.post("/editor/logout", (req, res) => {
-  return res.send("logout");
-});
+/* router.post("/editor/logout", (req, res) => {
+ *   return res.send("logout");
+ * }); */
 
 export default router;
