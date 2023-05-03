@@ -2,6 +2,7 @@ import User from "../models/user";
 import Post from "../models/post";
 import Comment from "../models/comment";
 import jwt from "jsonwebtoken";
+import he from "he";
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const passportJWT = require("passport-jwt");
@@ -9,17 +10,35 @@ const ExtractJWT = passportJWT.ExtractJwt;
 import { body, validationResult } from "express-validator";
 import "dotenv/config";
 
+const postDecoder = function(post) {
+  post.title = he.decode(post.title);
+  post.content = he.decode(post.content);
+  return post;
+};
+
+const postsDecoder = function(posts) {
+  let postsarray = [];
+  posts.forEach((post) => {
+    post.title = he.decode(post.title);
+    post.content = he.decode(post.content);
+    postsarray.push(post);
+  });
+  return postsarray;
+};
+
+const commentDecoder = function(comments) {
+  let commentarray = [];
+  comments.forEach((comment) => {
+    comment.reader_username = he.decode(comment.reader_username);
+    comment.content = he.decode(comment.content);
+    commentarray.push(comment);
+  });
+  return commentarray;
+};
+
+//
 exports.new_post_get = (req, res, next) => {
-  /* console.log("get ")
-   * // front end must send the token on the header. get's checked on the previous middleware. get method doesn't have a request body.
-   * try {
-   *   const post = await Post.findById(req.params.postid).populate("comments");
-   *   console.log(post);
-   *   return res.status(200).json({ post });
-   * } catch (err) {
-   *   return res.status(400).json({ message: "Can't fetch post from db" });
-   * } */
-  return res.json({ user: true });
+  return res.status(200);
 };
 
 exports.new_post_post = [
@@ -64,14 +83,10 @@ exports.new_post_post = [
   },
 ];
 
-exports.login_get = (req, res, next) => {
-  return res.status(200);
-};
-
-exports.logout_get = (req, res, next) => {
-  // token was valid, user was logged in and can now log out
-  return res.status(200);
-};
+/* exports.logout_get = (req, res, next) => {
+ *   // token was valid, user was logged in and can now log out
+ *   return res.status(200);
+ * }; */
 
 exports.create_user_get = (req, res, next) => {
   // not available to the general public
@@ -106,8 +121,13 @@ exports.create_user_post = async function(req, res, next) {
 exports.update_post_get = async function(req, res, next) {
   const postid = req.params.postid;
   try {
-    const post = await Post.findById(postid).populate("comments").exec();
-    return res.json({ post });
+    const post = await Post.findById(postid).exec();
+    const postDecoded = postDecoder(post);
+    const comments = await Comment.find({ post: postid })
+      .sort({ date: -1 })
+      .exec();
+    const commentsDecoded = commentDecoder(comments);
+    return res.json({ post: postDecoded, comments: commentsDecoded });
   } catch (err) {
     return res.json({ message: err });
   }
@@ -122,8 +142,8 @@ exports.update_post_put = [
     .isLength({ max: 100 })
     .withMessage("Post title must be less than 100 characters"),
   body("content")
-    .trim()
     .escape()
+    .trim()
     .isLength({ min: 1 })
     .withMessage("Post can't be empty"),
   async function(req, res, next) {
@@ -176,14 +196,14 @@ exports.delete_post_delete = async function(req, res, next) {
   }
 };
 
-exports.get_comment = async function(req, res, next) {
-  try {
-    const comment = await Comment.findById(req.params.commentid).exec();
-    return res.status(200).json({ comment });
-  } catch (err) {
-    return res.status(400).json({ message: "couldn't find comment" });
-  }
-};
+/* exports.get_comment = async function(req, res, next) {
+ *   try {
+ *     const comment = await Comment.findById(req.params.commentid).exec();
+ *     return res.status(200).json({ comment });
+ *   } catch (err) {
+ *     return res.status(400).json({ message: "couldn't find comment" });
+ *   }
+ * }; */
 
 exports.delete_comment = async function(req, res, next) {
   try {
@@ -211,11 +231,11 @@ exports.delete_comment = async function(req, res, next) {
 };
 
 // get all posts
-
 exports.posts_get = async function(req, res, next) {
   try {
-    const posts = await Post.find({}).sort({ date: 1 }).exec();
-    return res.json({ posts });
+    const posts = await Post.find({}).sort({ date: -1 }).exec();
+    const postsDecoded = postsDecoder(posts);
+    return res.json({ posts: postsDecoded });
   } catch (err) {
     return res.status(400).json({ message: "couldn't fetch posts" });
   }
@@ -225,10 +245,11 @@ exports.posts_get = async function(req, res, next) {
 
 exports.comments_get = async function(req, res, next) {
   try {
-    const comments = await Post.findById(req.params.postid, "comments")
-      .populate("comments")
+    const comments = await Comment.find({ post: req.params.postid })
+      .sort({ date: -1 })
       .exec();
-    return res.status(200).json({ comments });
+    const commentsDecoded = commentDecoder(comments);
+    return res.status(200).json({ comments: commentsDecoded });
   } catch (err) {
     return res.status(400).json({ message: "couldn't fetch comments" });
   }

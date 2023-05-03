@@ -2,20 +2,6 @@ import Comment from "../models/comment";
 import Post from "../models/post";
 import { body, validationResult } from "express-validator";
 
-exports.new_comment_get = async function(req, res, next) {
-  const postid = req.params.postid;
-  try {
-    const post = await Post.findById(postid).exec();
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    } else {
-      return res.status(200).json({ message: "200" });
-    }
-  } catch (err) {
-    return res.status(400).json({ message: "DB error" });
-  }
-};
-
 exports.new_comment_post = [
   body("reader_email")
     .optional({ checkFalsy: true })
@@ -70,9 +56,7 @@ exports.new_comment_post = [
             await Post.findByIdAndUpdate(req.params.postid, {
               $push: { comments: newcomment._id },
             }).exec();
-            return res.status(201).json({
-              posturl: `/posts/${req.params.postid}/comments`,
-            });
+            return res.status(201);
           } catch (err) {
             return res
               .status(400)

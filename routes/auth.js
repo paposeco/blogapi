@@ -48,7 +48,6 @@ passport.use(
 );
 
 export function decodeToken(req, res, next) {
-  // I will send the token on the request body, but will need to find an alternative later maybe
   const decoded = jwt.verify(req.body.token, process.env.JWTSECRET);
   req.body.author = decoded.author_name;
   req.body.username = decoded.username;
@@ -77,11 +76,5 @@ router.post("/editor/login", (req, res, next) => {
     });
   })(req, res);
 });
-
-//  I can now use this pass.authenticate jwt on every route that requires authentication, or I can use the verify function of the guy on the video
-
-/* router.post("/editor/logout", (req, res) => {
- *   return res.send("logout");
- * }); */
 
 export default router;
