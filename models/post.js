@@ -19,7 +19,9 @@ const PostSchema = new Schema(
 );
 
 PostSchema.virtual("post_timestamp").get(function() {
-  return DateTime.fromJSDate(this.date).toLocaleString(DateTime.DATETIME_SHORT);
+  return DateTime.fromJSDate(this.date)
+    .setLocale("en-gb")
+    .toLocaleString(DateTime.DATETIME_SHORT);
 });
 
 PostSchema.virtual("url").get(function() {
