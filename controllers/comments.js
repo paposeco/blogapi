@@ -35,38 +35,26 @@ exports.new_comment_post = [
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       } else {
-        try {
-          let newcomment;
-          if (req.body.reader_email !== "") {
-            newcomment = new Comment({
-              reader_email: req.body.reader_email,
-              reader_username: req.body.reader_username,
-              content: req.body.content,
-              post: post._id,
-            });
-          } else {
-            newcomment = new Comment({
-              reader_username: req.body.reader_username,
-              content: req.body.content,
-              post: post._id,
-            });
-          }
-          await newcomment.save();
-          try {
-            await Post.findByIdAndUpdate(req.params.postid, {
-              $push: { comments: newcomment._id },
-            }).exec();
-            return res.status(201);
-          } catch (err) {
-            return res
-              .status(400)
-              .json({ message: "Couldn't save comment to post" });
-          }
-        } catch (err) {
-          return res
-            .status(400)
-            .json({ message: "Couldn't save comment to db" });
+        let newcomment;
+        if (req.body.reader_email !== "") {
+          newcomment = new Comment({
+            reader_email: req.body.reader_email,
+            reader_username: req.body.reader_username,
+            content: req.body.content,
+            post: post._id,
+          });
+        } else {
+          newcomment = new Comment({
+            reader_username: req.body.reader_username,
+            content: req.body.content,
+            post: post._id,
+          });
         }
+        await newcomment.save();
+        await Post.findByIdAndUpdate(req.params.postid, {
+          $push: { comments: newcomment._id },
+        }).exec();
+        return res.status(201).json({ message: "it works" });
       }
     } catch (err) {
       return res.status(400).json({ message: "DB error" });

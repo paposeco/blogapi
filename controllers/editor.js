@@ -83,11 +83,6 @@ exports.new_post_post = [
   },
 ];
 
-/* exports.logout_get = (req, res, next) => {
- *   // token was valid, user was logged in and can now log out
- *   return res.status(200);
- * }; */
-
 exports.create_user_get = (req, res, next) => {
   // not available to the general public
   return res
@@ -121,14 +116,12 @@ exports.create_user_post = async function(req, res, next) {
 exports.update_post_get = async function(req, res, next) {
   const postid = req.params.postid;
   try {
-    console.log("try");
     const post = await Post.findById(postid).exec();
     const postDecoded = postDecoder(post);
     const comments = await Comment.find({ post: postid })
       .sort({ date: -1 })
       .exec();
     const commentsDecoded = commentDecoder(comments);
-    console.log(postDecoded);
     return res.json({ post: postDecoded, comments: commentsDecoded });
   } catch (err) {
     return res.json({ message: err });
