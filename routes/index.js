@@ -7,8 +7,10 @@ import { decodeToken } from "./auth.js";
 const router = express.Router();
 
 router.get("/", blog.posts_get);
-router.get("/posts", blog.posts_get);
+//router.get("/posts", blog.posts_get);
+router.get("/blog/:pagenumber", blog.posts_get_withpage);
 
+router.get("/totalposts", blog.count_posts_get);
 //router.get("/editor/login", editor.login_get);
 /* router.get(
  *   "/editor/logout",

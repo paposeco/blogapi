@@ -51,6 +51,7 @@ exports.single_post_get = async function(req, res, next) {
 exports.posts_get = async function(req, res, next) {
   try {
     const posts = await Post.find({ draft: false })
+      .limit(5)
       .sort({ date: -1 })
       .populate("comments")
       .exec();
@@ -58,5 +59,35 @@ exports.posts_get = async function(req, res, next) {
     return res.status(200).json({ posts: postsDecoded });
   } catch (err) {
     return res.status(400).json({ message: "couldn't fetch posts" });
+  }
+};
+
+// query.slice
+
+// count documents
+
+exports.count_posts_get = async function(req, res, next) {
+  try {
+    const posts = await Post.countDocuments({ draft: false });
+    return res.status(200).json({ totalposts: posts });
+  } catch (err) {
+    return res.status(400).json({ message: err });
+  }
+};
+
+exports.posts_get_withpage = async function(req, res, next) {
+  try {
+    const pagenumber = Number(req.params.pagenumber) - 1;
+    const posts = await Post.find({ draft: false })
+      .skip(pagenumber * 5)
+      .limit(5)
+      .sort({ date: -1 })
+      .populate("comments")
+      .exec();
+    const postsDecoded = postsDecoder(posts);
+    return res.status(200).json({ posts: postsDecoded });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ message: err });
   }
 };
