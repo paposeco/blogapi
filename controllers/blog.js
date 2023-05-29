@@ -31,7 +31,9 @@ const postsDecoder = function(posts) {
 // returns single post
 exports.single_post_get = async function(req, res, next) {
   try {
-    const post = await Post.findById(req.params.postid).exec();
+    const post = await Post.findById(req.params.postid)
+      .populate({ path: "author", select: "author_name" })
+      .exec();
     const postDecoded = postDecoder(post);
     const comments = await Comment.find({ post: req.params.postid })
       .sort({
@@ -54,6 +56,7 @@ exports.posts_get = async function(req, res, next) {
       .limit(5)
       .sort({ date: -1 })
       .populate("comments")
+      .populate({ path: "author", select: "author_name" })
       .exec();
     const postsDecoded = postsDecoder(posts);
     return res.status(200).json({ posts: postsDecoded });
@@ -83,6 +86,7 @@ exports.posts_get_withpage = async function(req, res, next) {
       .limit(5)
       .sort({ date: -1 })
       .populate("comments")
+      .populate({ path: "author", select: "author_name" })
       .exec();
     const postsDecoded = postsDecoder(posts);
     return res.status(200).json({ posts: postsDecoded });
