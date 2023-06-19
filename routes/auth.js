@@ -8,7 +8,7 @@ const bcrypt = require("bcryptjs");
 import User from "../models/user";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-require("../passport.js");
+//require("../passport.js");
 
 const router = express.Router();
 
@@ -66,6 +66,7 @@ router.post("/editor/login", (req, res, next) => {
     req.login(user, { session: false }, (err) => {
       if (err) {
         res.send(err);
+        return;
       }
       // generate a signed json web token with the contents of user object and return it in the response
       const token = jwt.sign(

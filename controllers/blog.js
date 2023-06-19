@@ -65,10 +65,7 @@ exports.posts_get = async function(req, res, next) {
   }
 };
 
-// query.slice
-
 // count documents
-
 exports.count_posts_get = async function(req, res, next) {
   try {
     const posts = await Post.countDocuments({ draft: false });

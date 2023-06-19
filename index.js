@@ -4,9 +4,12 @@ import cors from "cors";
 import indexRouter from "./routes/index.js";
 import authRouter from "./routes/auth.js";
 import postRouter from "./routes/post.js";
+import compression from "compression";
+import helmet from "helmet";
 import mongoose from "mongoose";
 import path from "path";
 import passport from "passport";
+import RateLimit from "express-rate-limit";
 
 mongoose.set("strictQuery", false);
 const mongoDB = process.env.MONGODB_URI;
@@ -17,7 +20,17 @@ async function main() {
 
 const app = express();
 
+app.use(helmet());
+app.use(compression());
 app.use(passport.initialize());
+
+// Set up rate limiter: maximum of twenty requests per minute
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20,
+});
+// Apply rate limiter to all requests
+app.use(limiter);
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
@@ -28,11 +41,6 @@ app.use(cors());
 app.use("/", indexRouter);
 app.use("/", authRouter);
 app.use("/", postRouter);
-/* app.use(
- *   "/editor/login",
- *   passport.authenticate("jwt", { session: false }),
- *   authRouter
- * ); */
 
 app.listen(process.env.PORT, () =>
   console.log("Example app listening on port 3000!")

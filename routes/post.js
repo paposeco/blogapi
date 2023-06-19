@@ -57,12 +57,6 @@ router.delete(
 
 // delete comments
 
-/* router.get(
- *   "/editor/posts/:postid/comments/:commentid",
- *   passport.authenticate("jwt", { session: false }),
- *   editor.get_comment
- * ); */
-
 router.delete(
   "/editor/posts/:postid/comments/:commentid",
   passport.authenticate("jwt", { session: false }),

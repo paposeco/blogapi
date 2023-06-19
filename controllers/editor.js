@@ -83,31 +83,50 @@ exports.new_post_post = [
   },
 ];
 
-exports.create_user_get = (req, res, next) => {
-  // not available to the general public
-  return res
-    .status(403)
-    .json({ message: "The creation of new users isn't available." });
+exports.create_user_get = async function(req, res, next) {
+  // check if there's a user on database. if there is, do not allow user creation
+  try {
+    const user = await User.findOne().exec();
+    if (!user) {
+      // allow user creation
+      return res.status(200);
+    } else {
+      return res
+        .status(403)
+        .json({ message: "The creation of new users isn't available." });
+    }
+  } catch (err) {
+    return res.status(400).json({ message: err });
+  }
 };
 
 exports.create_user_post = async function(req, res, next) {
   try {
-    bcrypt.hash(req.body.password, 10, async function(err, hashedpassword) {
-      if (err) {
-        return next(err);
-      }
-      const newuser = new User({
-        email: req.body.email,
-        password: hashedpassword,
-        author_name: req.body.name,
+    const user = await User.findOne().exec();
+    if (!user) {
+      bcrypt.hash(req.body.password, 10, async function(err, hashedpassword) {
+        if (err) {
+          return next(err);
+        }
+        const newuser = new User({
+          email: req.body.email,
+          password: hashedpassword,
+          author_name: req.body.name,
+        });
+        try {
+          await newuser.save();
+          return res
+            .status(200)
+            .json({ message: "user created", user: author_name });
+        } catch (err) {
+          return next(err);
+        }
       });
-      try {
-        await newuser.save();
-        return res.send(`${newuser}\n`);
-      } catch (err) {
-        return next(err);
-      }
-    });
+    } else {
+      return res
+        .status(403)
+        .json({ message: "The creation of new users isn't available." });
+    }
   } catch (err) {
     return next(err);
   }
@@ -190,15 +209,6 @@ exports.delete_post_delete = async function(req, res, next) {
     return res.status(400).json({ message: "post not found" });
   }
 };
-
-/* exports.get_comment = async function(req, res, next) {
- *   try {
- *     const comment = await Comment.findById(req.params.commentid).exec();
- *     return res.status(200).json({ comment });
- *   } catch (err) {
- *     return res.status(400).json({ message: "couldn't find comment" });
- *   }
- * }; */
 
 exports.delete_comment = async function(req, res, next) {
   try {
