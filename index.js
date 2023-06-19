@@ -42,10 +42,6 @@ app.use("/", indexRouter);
 app.use("/", authRouter);
 app.use("/", postRouter);
 
-app.listen(process.env.PORT, () =>
-  console.log("Example app listening on port 3000!")
-);
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
