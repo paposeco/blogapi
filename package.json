@@ -34,8 +34,10 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.22.5",
     "@babel/core": "^7.21.4",
     "@babel/node": "^7.20.7",
+    "@babel/preset-env": "^7.22.5",
     "nodemon": "^2.0.22"
   }
 }
