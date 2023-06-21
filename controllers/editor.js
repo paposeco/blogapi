@@ -38,7 +38,7 @@ const commentDecoder = function(comments) {
 
 //
 exports.new_post_get = (req, res, next) => {
-  return res.status(200);
+  return res.status(200).json({ message: "go ahead" });
 };
 
 exports.new_post_post = [
