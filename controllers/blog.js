@@ -59,6 +59,7 @@ exports.posts_get = async function(req, res, next) {
       .populate({ path: "author", select: "author_name" })
       .exec();
     const postsDecoded = postsDecoder(posts);
+    console.log("fetch posts");
     return res.status(200).json({ posts: postsDecoded });
   } catch (err) {
     return res.status(400).json({ message: "couldn't fetch posts" });
