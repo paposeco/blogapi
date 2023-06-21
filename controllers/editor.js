@@ -113,14 +113,11 @@ exports.create_user_post = async function(req, res, next) {
           password: hashedpassword,
           author_name: req.body.name,
         });
-        try {
-          await newuser.save();
-          return res
-            .status(200)
-            .json({ message: "user created", user: author_name });
-        } catch (err) {
-          return next(err);
-        }
+        const savenewuser = await newuser.save();
+        console.log(savenewuser);
+        return res
+          .status(200)
+          .json({ message: "user created", user: author_name });
       });
     } else {
       return res
