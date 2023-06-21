@@ -85,8 +85,10 @@ exports.new_post_post = [
 
 exports.create_user_get = async function(req, res, next) {
   // check if there's a user on database. if there is, do not allow user creation
+  console.log("create user get");
   try {
     const user = await User.findOne().exec();
+    console.log(user);
     if (!user) {
       // allow user creation
       return res.status(200);
