@@ -240,15 +240,14 @@ exports.delete_comment = async function(req, res, next) {
   try {
     const post = await Post.findById(req.params.postid).exec();
     const commentid = req.params.commentid;
-    const findcommentinpost = (element) =>
-      element.toString() === req.params.commentid;
+    const findcommentinpost = (element) => element.toString() === commentid;
     post.comments.splice(post.comments.findIndex(findcommentinpost), 1);
     try {
       await Post.findByIdAndUpdate(req.params.postid, {
         $set: { comments: post.comments },
       });
       try {
-        await Comment.findByIdAndDelete(req.params.commentid);
+        await Comment.findByIdAndDelete(commentid);
         return res.status(200).json({ message: "Comment deleted" });
       } catch (err) {
         return res.status(400).json({ message: "couldn't delete comment" });
