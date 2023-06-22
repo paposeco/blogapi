@@ -121,12 +121,12 @@ exports.create_user_post = async function(req, res, next) {
           "local",
           { session: false },
           (err, newuser, info) => {
-            if (err || !user) {
-              return res.status(400).json({
-                message: "Something is not right\n",
-                user: newuser,
-              });
-            }
+            /* if (err || !user) {
+             *   return res.status(400).json({
+             *     message: "Something is not right\n",
+             *     user: newuser,
+             *   });
+             * } */
 
             req.login(newuser, { session: false }, (err) => {
               if (err) {
