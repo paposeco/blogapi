@@ -53,13 +53,12 @@ exports.single_post_get = async function(req, res, next) {
 exports.posts_get = async function(req, res, next) {
   try {
     const posts = await Post.find({ draft: false })
-      .limit(5)
+      .limit(3)
       .sort({ date: -1 })
       .populate("comments")
       .populate({ path: "author", select: "author_name" })
       .exec();
     const postsDecoded = postsDecoder(posts);
-    console.log("fetch posts");
     return res.status(200).json({ posts: postsDecoded });
   } catch (err) {
     return res.status(400).json({ message: "couldn't fetch posts" });
@@ -80,8 +79,8 @@ exports.posts_get_withpage = async function(req, res, next) {
   try {
     const pagenumber = Number(req.params.pagenumber) - 1;
     const posts = await Post.find({ draft: false })
-      .skip(pagenumber * 5)
-      .limit(5)
+      .skip(pagenumber * 3)
+      .limit(3)
       .sort({ date: -1 })
       .populate("comments")
       .populate({ path: "author", select: "author_name" })
