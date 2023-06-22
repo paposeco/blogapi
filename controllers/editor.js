@@ -114,10 +114,39 @@ exports.create_user_post = async function(req, res, next) {
           author_name: req.body.name,
         });
         const savenewuser = await newuser.save();
-        console.log(savenewuser);
-        return res
-          .status(200)
-          .json({ message: "user created", user: author_name });
+
+        //login user
+
+        passport.authenticate(
+          "local",
+          { session: false },
+          (err, newuser, info) => {
+            if (err || !user) {
+              return res.status(400).json({
+                message: "Something is not right\n",
+                user: newuser,
+              });
+            }
+
+            req.login(newuser, { session: false }, (err) => {
+              if (err) {
+                res.send(err);
+                return;
+              }
+              // generate a signed json web token with the contents of user object and return it in the response
+              const token = jwt.sign(
+                { author_name: req.body.name, username: req.body.email },
+                process.env.JWTSECRET
+              );
+              return res
+                .status(200)
+                .json({ token: token, author: req.body.name });
+            });
+          }
+        )(req, res);
+        /* return res
+         *   .status(200)
+         *   .json({ message: "user created", user: req.body.name }); */
       });
     } else {
       return res
